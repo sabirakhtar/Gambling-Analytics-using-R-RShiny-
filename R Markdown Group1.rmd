@@ -1,0 +1,226 @@
+---
+title: "Internet Sports Gambling Activity Analysis"
+author: "Ajay Parihar, Sabir Akthar, Caroline Kadic"
+date: "Decemer 13 2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+The purpose of this study is to analyse the gambling behavior of players. The dataset used covers actual betting behavior data for both fixed-odds and live-action sports book. The analysis provided lot of insights from the data, the report is divided in the following part:
+
+1. Analysis of Data Set
+2. User Analsyis
+
+##Analysis of Data Set
+The dataset has around 78k transaction, looking at the dataset we see around 6M+ betting transcation for the start and mid season and around 3M+ in end season. Frequency of poker user was higher in the mid-season. Majority of players has length of service around 200 days. **Germany** has high number gambling players following by *Turkey* and *Spain*. 
+The most popular website is **BETANDWIN** with the highest no. of users. The young generation is the highest user of the platform.
+Below are some of the charts of the analysis done.
+
+
+<!--User Aggregation by Time (Frequency)-->
+
+```{r ,message=FALSE, warning=FALSE,echo = FALSE, fig.width=10, fig.height=3,fig.show='hold',fig.align='center' }
+library(data.table)
+require(tidyr)
+require(dplyr)
+library(ggplot2)
+library(plotly)
+#install.packages("webshot")
+library(webshot)
+#webshot::install_phantomjs()
+#install.packages("kableExtra")
+library(knitr)
+library(kableExtra)
+basetable <- fread(file="C:/Users/ckadic/Documents/Open-source-programming-master/Open-source-programming-master/Group Assignment/BASETABLEFINALFINAL.csv", header=TRUE)
+
+x = basetable$Gender
+  
+  plot_ly(x=x, type = "histogram") %>%
+    layout(title = "Gambling Activity by Gender")
+  
+  basetable$Agegroup<- cut(basetable$AGE, c(seq(20, 70, by = 10), Inf), include.lowest = TRUE)
+poker_overall_agegroup<-basetable[!is.na(basetable$AGE),c("Agegroup","poker_Mbuy")]
+
+x=basetable$Agegroup
+
+plot_ly(x=x, type = "histogram") %>%
+  layout(title = "Count by Age Group")
+  
+  ####GENDER WISE PRODUCT USAGE Overall#############################
+x = basetable$Country
+
+plot_ly(x=x, type = "histogram") %>%
+  layout(title = "Gambling Activity by Country")
+
+
+monthfreq <- unique(basetable[,c("USERID","udaf_betf2months",
+                                 "udaf_betm4months",
+                                 "udaf_betl2months")])
+names(monthfreq) <- c("USERID","Season Start(2 Months)",
+                      "Mid-Season(4 Months)",
+                      "End Season (2 Months)")
+monthfreq <- gather(monthfreq,Freq,value,-USERID)
+monthfreq <- monthfreq[complete.cases(monthfreq),]
+monthfreq$value <- as.character(monthfreq$value)
+x = factor(monthfreq$Freq,c("USERID","Season Start(2 Months)",
+                            "Mid-Season(4 Months)",
+                            "End Season (2 Months)"))
+y = monthfreq$value
+
+plot_ly(y=y, x=x, histfunc='sum', type = "histogram") %>%
+  layout(title = "User Aggregation by Time (Frequency)",
+         yaxis=list(type='linear'))
+
+#######################POKER FREQUENCY############################
+#basetable$poker_l2months
+monthfreq <- unique(basetable[,c("USERID","poker_f2months",
+                                 "poker_m4months",
+                                 "poker_l2months")])
+names(monthfreq) <- c("USERID","Season Start(2 Months)",
+                      "Mid-Season(4 Months)",
+                      "End Season (2 Months)")
+monthfreq <- gather(monthfreq,Freq,value,-USERID)
+monthfreq <- monthfreq[complete.cases(monthfreq),]
+monthfreq$value <- as.character(monthfreq$value)
+
+x = factor(monthfreq$Freq,c("USERID","Season Start(2 Months)",
+                            "Mid-Season(4 Months)",
+                            "End Season (2 Months)"))
+y = monthfreq$value
+
+plot_ly(y=y, x=x, histfunc='sum', type = "histogram") %>%
+  layout(title = "Poker Users by Time (Frequency)",
+         yaxis=list(type='linear'))
+
+library(dplyr)
+basetable_clean_professinals<- basetable %>% 
+filter(poker_m4months > 100 & poker_l2months >= 200 & poker_f2months>100)
+mydata_clean_unique<-unique(basetable_clean_professinals[,c("USERID","poker_f2months","poker_m4months","poker_l2months")])
+dset1<-head(mydata_clean_unique,10)
+View(dset1)
+
+
+
+freq_by_lor <- unique(basetable[,c("USERID","udarLOS")])
+freq_by_lor <- freq_by_lor[complete.cases(freq_by_lor),]
+
+freq_by_lor$udarLOS<-cut(freq_by_lor$udarLOS, c(seq(0, 300, by = 30), Inf), include.lowest = TRUE)
+x = freq_by_lor$udarLOS
+
+plot_ly(x=x, type = "histogram") %>%
+  layout(title = "Frequency of LOS (Length of Gambling Subscription) ")
+
+
+
+```
+
+
+
+##User Analysis:
+
+As gambling addiction is a major problem, we looked at the dataset to identity gambling habits using multiple factors like age, sudden gambling activity increase, better habits. 
+
+
+###User activity increase
+The below table shoes sudden increase in activity of the users below, since the sample is just 6 months there and there might be other factors that might cause this change.
+
+```{r ,echo = FALSE, fig.width=10, fig.height=5,fig.show='hold',fig.align='center'}
+library(data.table)
+require(tidyr)
+require(dplyr)
+library(ggplot2)
+
+mydata_clean<- basetable %>% filter(poker_m4months > 20 & poker_l2months >= 50 & poker_f2months>2 & poker_f2months<10)
+mydata_clean_unique<-unique(mydata_clean[,c("USERID","poker_f2months","poker_m4months","poker_l2months")])
+dset1<-head(mydata_clean_unique)
+knitr::kable(dset1, format = "pandoc",full_width = F)
+
+
+
+```
+
+
+
+
+###TOP 10 Most Active Players
+Here we can see the Top 10 most active players! As we can see below the customers with these IDs were, at first, investing little money and later on their investment increased. 8 of these 10 players were, at first, investing little money, then they increased their investment and then they were decreasing their investment.
+
+```{r ,echo = FALSE, fig.width=10, fig.height=5,fig.show='hold',fig.align='center'}
+library(data.table)
+require(tidyr)
+require(dplyr)
+library(ggplot2)
+
+
+###Highly active players
+basetable_clean_professinals<- basetable %>% filter(poker_m4months > 100 & poker_l2months >= 200 & poker_f2months>100)
+mydata_clean_unique<-unique(basetable_clean_professinals[,c("USERID","poker_f2months","poker_m4months","poker_l2months")])
+dset1<-head(mydata_clean_unique,10)
+knitr::kable(dset1, format = "pandoc")
+
+
+
+```
+
+
+
+
+
+###Target for Promotions
+As you can see the gamblers with these USERIDs were, first of all, investing money and later on they invested zero! We suppose that these players were loosing and therefore gave up with the gambling. As a provider, BWIN should focus on targeting especially gamblers with these IDs in order to convince them to start playing again and therefore make more money.
+
+```{r ,echo = FALSE, fig.width=10, fig.height=5,fig.show='hold',fig.align='center'}
+library(data.table)
+require(tidyr)
+require(dplyr)
+library(ggplot2)
+
+
+###targets for promotions
+
+basetable_clean_promotions<- basetable %>% filter(poker_m4months== 0 & poker_l2months==0 &  poker_f2months>10)
+basetable_clean_promotions_rerrange<-basetable_clean_promotions %>% arrange(desc(poker_Mbuy))
+mydata_clean_unique<-unique(basetable_clean_promotions_rerrange[,c("USERID","poker_f2months","poker_m4months","poker_l2months")])
+dset1<-head(mydata_clean_unique)
+knitr::kable(dset1, format = "pandoc")
+
+```
+
+
+
+###Age to no. of bets ratio
+Here we can see the ratio of the factors Age and number of bets. As we can see, gamblers that belonged to the agegroup 50-60 were betting the most. We suppose that this is due to the fact that people within this age group have saved some money on the side and try to win some more by betting. Besides, people within this agegroup usually have more freetime than people that belong to the age group 20-30.???  
+
+```{r ,echo = FALSE, fig.width=10, fig.height=5,fig.show='hold',fig.align='center'}
+library(data.table)
+require(tidyr)
+require(dplyr)
+library(ggplot2)
+
+
+###Age to no. of bets ratio
+
+basetable$Agegroup<- cut(basetable$AGE, c(seq(20, 100, by = 10), Inf), include.lowest = TRUE)
+poker_overall_agegroup<-basetable[!is.na(basetable$pokerF_overall),c("Agegroup","pokerF_overall")]
+poker_agegroup_rearrange<- aggregate(poker_overall_agegroup$pokerF_overall, by=list(Category=poker_overall_agegroup$Agegroup), FUN=mean)
+dset1<-head(poker_agegroup_rearrange)
+knitr::kable(dset1, format = "pandoc")
+```
+
+
+
+
+
+
+
+
+
+
+
+
