@@ -1,19 +1,19 @@
 
 #Importing the Data files
-AnalyticDataInternetGambling<- read_sas("C:/Users/user/Downloads/IESEG Studies/R Programming/Group Assignment/AnalyticDataInternetGambling.sas7bdat")
-RawDataIDemographics<-read_sas("C:/Users/user/Downloads/IESEG Studies/R Programming/Group Assignment/RawDataIDemographics.sas7bdat")
-RawDataIIUserDailyAggregation<- read_sas("C:/Users/user/Downloads/IESEG Studies/R Programming/Group Assignment/RawDataIIUserDailyAggregation.sas7bdat")
-RawDataIIIPokerChipConversions<- read_sas("C:/Users/user/Downloads/IESEG Studies/R Programming/Group Assignment/RawDataIIIPokerChipConversions.sas7bdat")
+AnalyticDataInternetGambling<- read_sas("your file location/AnalyticDataInternetGambling.sas7bdat")
+RawDataIDemographics<-read_sas("your file location/RawDataIDemographics.sas7bdat")
+RawDataIIUserDailyAggregation<- read_sas("your file location/RawDataIIUserDailyAggregation.sas7bdat")
+RawDataIIIPokerChipConversions<- read_sas("your file location/RawDataIIIPokerChipConversions.sas7bdat")
 
 #Reading the Country names, Language Description, Application Description and Product Description from csv files
 #Countryname - Country Names 
 #Appdesc - Application Description 
 #Langdesc - Language Description  
 #Productdesc - Product Description
-Countryname<-read.csv2("C:/Users/user/Downloads/IESEG Studies/R Programming/Group Assignment/Country.csv",sep=",",stringsAsFactors = FALSE)
-Appdesc<-read.csv2("C:/Users/user/Downloads/IESEG Studies/R Programming/Group Assignment/Appdesc.csv",sep=",",stringsAsFactors = FALSE)
-Langdesc<-read.csv2("C:/Users/user/Downloads/IESEG Studies/R Programming/Group Assignment/Langdesc.csv",sep=",",stringsAsFactors = FALSE)
-Productdesc<-read.csv2("C:/Users/user/Downloads/IESEG Studies/R Programming/Group Assignment/Productdesc.csv",sep=",",stringsAsFactors = FALSE)
+Countryname<-read.csv2("your file location/Country.csv",sep=",",stringsAsFactors = FALSE)
+Appdesc<-read.csv2("your file location/R Programming/Group Assignment/Appdesc.csv",sep=",",stringsAsFactors = FALSE)
+Langdesc<-read.csv2("your file location/Langdesc.csv",sep=",",stringsAsFactors = FALSE)
+Productdesc<-read.csv2("your file location/Productdesc.csv",sep=",",stringsAsFactors = FALSE)
 
 
 #Converting characters into date format
@@ -166,4 +166,4 @@ igdata_demog_poker_uda_clean<-merge(x=igdata_demog_pokerclean,y=uda_clean,by.x="
 igdata_demog_poker_uda_clean$Gender = ifelse(igdata_demog_poker_uda_clean$Gender == 1,"Male","Female")
 basetable<-igdata_demog_poker_uda_clean
 
-write.csv(igdata_demog_poker_uda_clean,file="C:/Users/user/Downloads/IESEG Studies/R Programming/Group Assignment/basetable.csv")
+write.csv(igdata_demog_poker_uda_clean,file="your file location/basetable.csv")
